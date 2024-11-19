@@ -30,6 +30,8 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const serviceCollection = client.db("carDB").collection("services");
+    const orderCollection = client.db("carDB").collection("orders");
+
     app.get("/services", async (req, res) => {
       const result = await serviceCollection.find().toArray();
       res.send(result);
@@ -38,7 +40,18 @@ async function run() {
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await serviceCollection.findOne(query);
+      const options = {
+        projection: { title: 1, price: 1 },
+      };
+      const result = await serviceCollection.findOne(query, options);
+      // console.log(result);
+      res.send(result);
+    });
+
+    // orders
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      const result = await orderCollection.insertOne(order);
       console.log(result);
       res.send(result);
     });
