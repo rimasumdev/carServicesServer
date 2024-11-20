@@ -56,6 +56,34 @@ async function run() {
       res.send(result);
     });
 
+    // get orders
+    app.get("/orders", async (req, res) => {
+      console.log(req.query);
+      const email = req.query.email;
+      const query = { email: email };
+      const result = await orderCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // update order
+    app.patch("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body.status;
+      console.log(id, status);
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = { $set: { status: status } };
+      const result = await orderCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
+    // delete order
+    app.delete("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
