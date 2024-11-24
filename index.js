@@ -113,8 +113,34 @@ async function run() {
     // services
 
     app.get("/services", async (req, res) => {
-      const result = await serviceCollection.find().toArray();
-      res.send(result);
+      try {
+        const searchTerm = req.query.search || "";
+        let query = {
+          $or: [
+            { title: { $regex: searchTerm, $options: "i" } },
+            { service_id: { $regex: searchTerm, $options: "i" } },
+            { price: { $regex: searchTerm, $options: "i" } },
+            { description: { $regex: searchTerm, $options: "i" } },
+            // Convert ObjectId to string and then search
+            {
+              $expr: {
+                $regexMatch: {
+                  input: { $toString: "$_id" },
+                  regex: searchTerm,
+                  options: "i",
+                },
+              },
+            },
+          ],
+        };
+        console.log(query);
+        const result = await serviceCollection.find(query).toArray();
+        res.send(result);
+      } catch (error) {
+        res
+          .status(500)
+          .send({ error: true, message: "Failed to fetch services" });
+      }
     });
 
     app.get("/services/:id", async (req, res) => {
