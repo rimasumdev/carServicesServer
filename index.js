@@ -133,7 +133,7 @@ async function run() {
             },
           ],
         };
-        console.log(query);
+        // console.log(query);
         const result = await serviceCollection.find(query).toArray();
         res.send(result);
       } catch (error) {
