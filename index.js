@@ -17,7 +17,11 @@ dotenv.config();
 // middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "https://car-doctor-1e3fb.web.app",
+      "https://car-doctor-1e3fb.firebaseapp.com",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
