@@ -9,6 +9,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const { ObjectId } = require("mongodb");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const { body, validationResult } = require("express-validator");
 
 // Load environment variables
 dotenv.config();
@@ -237,3 +238,25 @@ if (
   console.error("Required environment variables are missing");
   process.exit(1);
 }
+
+app.post(
+  "/login",
+  [
+    body("email").isEmail().withMessage("Please enter a valid email"),
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long"),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      // Your login logic here
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
